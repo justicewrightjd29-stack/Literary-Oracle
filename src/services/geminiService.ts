@@ -12,16 +12,16 @@ const INITIAL_SCENE_SCHEMA = {
   properties: {
     bookTitle: { type: Type.STRING },
     author: { type: Type.STRING },
-    majorArcana: { type: Type.STRING, description: "The Major Arcana assigned to this book/theme" },
+    majorArcana: { type: Type.STRING, description: "Major Arcana card name" },
     choices: {
       type: Type.ARRAY,
       items: {
         type: Type.OBJECT,
         properties: {
           id: { type: Type.STRING },
-          quote: { type: Type.STRING, description: "A famous or evocative single sentence from the novel" },
-          minorArcana: { type: Type.STRING, description: "The Minor Arcana representing the tone of this sentence" },
-          paragraph: { type: Type.STRING, description: "The original 300-500 word context paragraph containing this quote" }
+          quote: { type: Type.STRING, description: "Single evocative quote" },
+          minorArcana: { type: Type.STRING, description: "Matching Minor Arcana" },
+          paragraph: { type: Type.STRING, description: "Context paragraph (150-250 words)" }
         },
         required: ["id", "quote", "minorArcana", "paragraph"]
       }
@@ -93,18 +93,30 @@ export const geminiService = {
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
+        systemInstruction: "You are a Literary Oracle. Always output valid JSON matching the requested schema. Do not include markdown formatting or commentary.",
         responseMimeType: "application/json",
         responseSchema: INITIAL_SCENE_SCHEMA as any,
       },
     });
 
+    if (!response.text) {
+      console.error("Empty AI Response:", response);
+      throw new Error("The Oracle is silent. The void did not respond.");
+    }
+
+    const rawText = response.text;
     try {
-      const text = response.text || "{}";
-      const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      // More robust JSON cleaning: Find the first '{' and last '}'
+      const start = rawText.indexOf('{');
+      const end = rawText.lastIndexOf('}');
+      const cleanJson = (start !== -1 && end !== -1) 
+        ? rawText.substring(start, end + 1) 
+        : rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+      
       const data = JSON.parse(cleanJson);
       
-      if (!data.choices || data.choices.length === 0) {
-        throw new Error("The Oracle returned no echoes. The void is silent.");
+      if (!data.choices || !Array.isArray(data.choices) || data.choices.length === 0) {
+        throw new Error("Empty choices array from model");
       }
 
       return {
@@ -114,8 +126,12 @@ export const geminiService = {
         majorArcana: selectedArcanaKey as TarotCard,
       };
     } catch (parseError) {
-      console.error("JSON Parse failed:", parseError, response.text);
-      throw new Error("The Akashic Records are garbled. Please try again.");
+      console.error("Deep JSON Parse Failure:", {
+        error: parseError,
+        rawResponse: rawText,
+        book: mapping.book
+      });
+      throw new Error("The Akashic Records are garbled. The threads of destiny are tangled.");
     }
   },
 
@@ -132,17 +148,23 @@ export const geminiService = {
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
+        systemInstruction: "You are a Literary Oracle. Provide practical daily fortunes in the requested JSON format.",
         responseMimeType: "application/json",
         responseSchema: INTERPRETATION_SCHEMA as any,
       },
     });
 
+    const rawText = response.text || "";
     try {
-      const text = response.text || "{}";
-      const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      const start = rawText.indexOf('{');
+      const end = rawText.lastIndexOf('}');
+      const cleanJson = (start !== -1 && end !== -1) 
+        ? rawText.substring(start, end + 1) 
+        : rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+        
       return JSON.parse(cleanJson);
     } catch (e) {
-      console.error("Interpretation parse error:", e);
+      console.error("Interpretation parse error:", e, rawText);
       throw new Error("Could not decipher the Oracle's prophecy.");
     }
   },
