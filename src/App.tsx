@@ -195,38 +195,46 @@ export default function App() {
           )}
 
           {appState === 'MAJOR_DRAW' && userState.currentScene && (
-            <ArcanaDraw 
-              card={userState.currentScene.majorArcana}
-              bookTitle={userState.currentScene.bookTitle}
-              author={userState.currentScene.author}
-              onContinue={() => setAppState('SENTENCE_PICK')}
-            />
+            <div key="major-draw">
+              <ArcanaDraw 
+                card={userState.currentScene.majorArcana}
+                bookTitle={userState.currentScene.bookTitle}
+                author={userState.currentScene.author}
+                onContinue={() => setAppState('SENTENCE_PICK')}
+              />
+            </div>
           )}
 
           {appState === 'SENTENCE_PICK' && userState.currentScene && (
-            <SentencePick 
-              choices={userState.currentScene.choices}
-              onSelect={handleSentenceChoice}
-            />
+            <div key="sentence-pick">
+              <SentencePick 
+                choices={userState.currentScene.choices || []}
+                onSelect={handleSentenceChoice}
+              />
+            </div>
           )}
 
           {appState === 'READING' && userState.currentScene && (
-            <ReadingView 
-              scene={userState.currentScene}
-              wordBank={userState.wordBank}
-              onAddWord={addWord}
-              onRemoveWord={removeWord}
-              onContinue={fetchInterpretation}
-            />
+            <div key="reading">
+              <ReadingView 
+                scene={userState.currentScene}
+                wordBank={userState.wordBank}
+                onAddWord={addWord}
+                onRemoveWord={removeWord}
+                onContinue={fetchInterpretation}
+              />
+            </div>
           )}
 
           {appState === 'ORACLE' && userState.currentScene && lastOracle && (
-            <OracleView 
-              scene={userState.currentScene}
-              interpretation={lastOracle}
-              onHome={reset}
-              onRestart={initiateJourney}
-            />
+            <div key="oracle">
+              <OracleView 
+                scene={userState.currentScene}
+                interpretation={lastOracle}
+                onHome={reset}
+                onRestart={initiateJourney}
+              />
+            </div>
           )}
 
           {appState === 'LOADING' && (
