@@ -81,27 +81,29 @@ export const geminiService = {
     const mapping = MAJOR_ARCANA_MAPPING[selectedArcanaKey];
 
     const prompt = `Act as a Literary Oracle. 
-    1. The selected Major Tarot Arcana is "${selectedArcanaKey}".
-    2. The corresponding book is "${mapping.book}" by ${mapping.author}.
-    3. Task: Extract 3 evocatively different quotes from this specific book.
-    4. For EACH quote:
-       - Assign a matching Minor Tarot Arcana.
-       - Provide the ORIGINAL full context paragraph (150-250 words) from the book containing it.
-    IMPORTANT: Return EXACTLY 3 choices in the JSON array. Output MUST be valid JSON.`;
+    BOOK: "${mapping.book}" by ${mapping.author}.
+    ARCANA: "${selectedArcanaKey}".
+    
+    TASK:
+    1. Extract 3 evocative quotes from this book.
+    2. For each, assign a Minor Arcana.
+    3. Provide the original context paragraph (150-250 words) for each quote.
+    4. Return ONLY the JSON object.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-flash-latest",
       contents: prompt,
       config: {
-        systemInstruction: "You are a Literary Oracle. Always output valid JSON matching the requested schema. Do not include markdown formatting or commentary.",
+        thinkingConfig: { thinkingLevel: "LOW" as any },
         responseMimeType: "application/json",
         responseSchema: INITIAL_SCENE_SCHEMA as any,
       },
     });
 
     if (!response.text) {
-      console.error("Empty AI Response:", response);
-      throw new Error("The Oracle is silent. The void did not respond.");
+      const reason = (response as any).candidates?.[0]?.finishReason;
+      console.error("AI Response blocked or empty. Reason:", reason);
+      throw new Error(`The Oracle is silent (Reason: ${reason || 'Unknown'}). Please try again.`);
     }
 
     const rawText = response.text;
@@ -145,10 +147,10 @@ export const geminiService = {
     The tone should be that of a mentor or a wise oracle giving practical advice for today.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-flash-latest",
       contents: prompt,
       config: {
-        systemInstruction: "You are a Literary Oracle. Provide practical daily fortunes in the requested JSON format.",
+        thinkingConfig: { thinkingLevel: "LOW" as any },
         responseMimeType: "application/json",
         responseSchema: INTERPRETATION_SCHEMA as any,
       },
@@ -173,7 +175,7 @@ export const geminiService = {
     const prompt = `Translate the English word "${word}" into Chinese based on its meaning in this paragraph: "${context.slice(0, 500)}". Provide pinyin and a very brief context note.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-flash-latest",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
