@@ -32,10 +32,17 @@ export default function App() {
         currentScene: sceneData
       }));
       setAppState('MAJOR_DRAW');
-    } catch (err) {
+    } catch (err: any) {
       console.error("Initiation failed:", err);
-      // Give the user visual feedback if things fail, especially for Vercel deploys
-      alert(`The void remains closed: ${err instanceof Error ? err.message : 'Unknown error'}. Please ensure Gemini API keys are configured.`);
+      
+      let friendlyMsg = "连接虚空失败，请稍后再试。";
+      if (err.message?.includes("429") || err.message?.includes("QUOTA") || err.message?.includes("RESOURCE_EXHAUSTED")) {
+        friendlyMsg = "神谕今日过于繁忙（请求频率过高），请耐心等待 1 分钟后再试。";
+      } else {
+        friendlyMsg = `虚空门扉紧闭：${err instanceof Error ? err.message : '未知错误'}。请检查 API Key 配置。`;
+      }
+      
+      alert(friendlyMsg);
       setAppState('HOME');
     }
   };
