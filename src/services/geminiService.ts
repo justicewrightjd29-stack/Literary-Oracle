@@ -50,28 +50,28 @@ const TRANSLATION_SCHEMA = {
 };
 
 const MAJOR_ARCANA_MAPPING: Record<string, { book: string; author: string }> = {
-  [TarotCard.FOOL]: { book: "The Catcher in the Rye", author: "J.D. Salinger" },
-  [TarotCard.MAGICIAN]: { book: "1984", author: "George Orwell" },
-  [TarotCard.HIGH_PRIESTESS]: { book: "The Stranger", author: "Albert Camus" },
-  [TarotCard.EMPRESS]: { book: "Little Women", author: "Louisa May Alcott" },
+  [TarotCard.FOOL]: { book: "The Adventures of Huckleberry Finn", author: "Mark Twain" },
+  [TarotCard.MAGICIAN]: { book: "Frankenstein", author: "Mary Shelley" },
+  [TarotCard.HIGH_PRIESTESS]: { book: "Pride and Prejudice", author: "Jane Austen" },
+  [TarotCard.EMPRESS]: { book: "Sense and Sensibility", author: "Jane Austen" },
   [TarotCard.EMPEROR]: { book: "A Tale of Two Cities", author: "Charles Dickens" },
   [TarotCard.HIEROPHANT]: { book: "Crime and Punishment", author: "Fyodor Dostoevsky" },
-  [TarotCard.LOVERS]: { book: "The Great Gatsby", author: "F. Scott Fitzgerald" },
-  [TarotCard.CHARIOT]: { book: "The Old Man and the Sea", author: "Ernest Hemingway" },
-  [TarotCard.STRENGTH]: { book: "Wuthering Heights", author: "Emily Brontë" },
-  [TarotCard.HERMIT]: { book: "Siddhartha", author: "Hermann Hesse" },
-  [TarotCard.WHEEL_OF_FORTUNE]: { book: "One Hundred Years of Solitude", author: "Gabriel García Márquez" },
-  [TarotCard.JUSTICE]: { book: "Crime and Punishment", author: "Fyodor Dostoevsky" },
-  [TarotCard.HANGED_MAN]: { book: "The Metamorphosis", author: "Franz Kafka" },
-  [TarotCard.DEATH]: { book: "1984", author: "George Orwell" },
-  [TarotCard.TEMPERANCE]: { book: "The Little Prince", author: "Antoine de Saint-Exupéry" },
-  [TarotCard.DEVIL]: { book: "Lolita", author: "Vladimir Nabokov" },
-  [TarotCard.TOWER]: { book: "The Trial", author: "Franz Kafka" },
-  [TarotCard.STAR]: { book: "The Little Prince", author: "Antoine de Saint-Exupéry" },
-  [TarotCard.MOON]: { book: "One Hundred Years of Solitude", author: "Gabriel García Márquez" },
-  [TarotCard.SUN]: { book: "The Old Man and the Sea", author: "Ernest Hemingway" },
-  [TarotCard.JUDGEMENT]: { book: "Siddhartha", author: "Hermann Hesse" },
-  [TarotCard.WORLD]: { book: "The Lord of the Rings", author: "J.R.R. Tolkien" }
+  [TarotCard.LOVERS]: { book: "Romeo and Juliet", author: "William Shakespeare" },
+  [TarotCard.CHARIOT]: { book: "Moby-Dick", author: "Herman Melville" },
+  [TarotCard.STRENGTH]: { book: "Jane Eyre", author: "Charlotte Brontë" },
+  [TarotCard.HERMIT]: { book: "Walden", author: "Henry David Thoreau" },
+  [TarotCard.WHEEL_OF_FORTUNE]: { book: "Great Expectations", author: "Charles Dickens" },
+  [TarotCard.JUSTICE]: { book: "The Brothers Karamazov", author: "Fyodor Dostoevsky" },
+  [TarotCard.HANGED_MAN]: { book: "The Picture of Dorian Gray", author: "Oscar Wilde" },
+  [TarotCard.DEATH]: { book: "Hamlet", author: "William Shakespeare" },
+  [TarotCard.TEMPERANCE]: { book: "The Secret Garden", author: "Frances Hodgson Burnett" },
+  [TarotCard.DEVIL]: { book: "Dracula", author: "Bram Stoker" },
+  [TarotCard.TOWER]: { book: "Paradise Lost", author: "John Milton" },
+  [TarotCard.STAR]: { book: "Treasure Island", author: "Robert Louis Stevenson" },
+  [TarotCard.MOON]: { book: "Alice in Wonderland", author: "Lewis Carroll" },
+  [TarotCard.SUN]: { book: "The Odyssey", author: "Homer" },
+  [TarotCard.JUDGEMENT]: { book: "War and Peace", author: "Leo Tolstoy" },
+  [TarotCard.WORLD]: { book: "Around the World in Eighty Days", author: "Jules Verne" }
 };
 
 export const geminiService = {
@@ -80,15 +80,15 @@ export const geminiService = {
     const selectedArcanaKey = arcanaKeys[Math.floor(Math.random() * arcanaKeys.length)];
     const mapping = MAJOR_ARCANA_MAPPING[selectedArcanaKey];
 
-    const prompt = `Act as a Literary Oracle. 
+    const prompt = `Act as a Tarot-Bound Literary Oracle. 
     BOOK: "${mapping.book}" by ${mapping.author}.
-    ARCANA: "${selectedArcanaKey}".
+    MAJOR THEME: "${selectedArcanaKey}".
     
-    TASK:
-    1. Extract 3 evocative quotes from this book.
-    2. For each, assign a Minor Arcana.
-    3. Provide the original context paragraph (150-250 words) for each quote.
-    4. Return ONLY the JSON object.`;
+    INSTRUCTIONS:
+    1. Identify 3 poetic and evocative "echoes" (quotes or reconstructed sentences) from this book.
+    2. For each echo, assign a matching Minor Arcana.
+    3. For each, describe/reconstruct a vivid context scene (150-200 words) in the author's stylistic voice that features the quote. Avoid exact verbatim replication of long paragraphs to maintain narrative flow and ensure stability.
+    4. Return valid JSON only.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-flash-latest",
