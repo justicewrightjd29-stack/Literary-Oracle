@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ReadingScene, UserState, VocabularyWord, SentenceChoice, Interpretation } from './types';
 import { geminiService } from './services/geminiService';
@@ -21,8 +21,18 @@ export default function App() {
     wordBank: [],
   });
   const [lastOracle, setLastOracle] = useState<Interpretation | null>(null);
+  const [cooldown, setCooldown] = useState<number>(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(prev => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
 
   const initiateJourney = async () => {
+    if (cooldown > 0) return;
+
     setAppState('LOADING');
     setLoadingMsg('Drawing from the Akashic Records...');
     try {
@@ -35,14 +45,13 @@ export default function App() {
     } catch (err: any) {
       console.error("Initiation failed:", err);
       
-      let friendlyMsg = "连接虚空失败，请稍后再试。";
       if (err.message?.includes("429") || err.message?.includes("QUOTA") || err.message?.includes("RESOURCE_EXHAUSTED")) {
-        friendlyMsg = "神谕今日过于繁忙（请求频率过高），请耐心等待 1 分钟后再试。";
+        setCooldown(60);
+        alert("神谕今日过于繁忙（请求频率过高），请耐心等待 60 秒冷却后再试。");
       } else {
-        friendlyMsg = `虚空门扉紧闭：${err instanceof Error ? err.message : '未知错误'}。请检查 API Key 配置。`;
+        alert(`虚空门扉紧闭：${err instanceof Error ? err.message : '未知错误'}。请重试。`);
       }
       
-      alert(friendlyMsg);
       setAppState('HOME');
     }
   };
@@ -158,15 +167,16 @@ export default function App() {
                   </motion.div>
                   <h1 className="text-[120px] leading-tight font-serif tracking-tighter text-ink">Literary Oracle</h1>
                   <p className="text-2xl font-serif text-ink/40 max-w-xl mx-auto leading-relaxed italic">
-                    "Seek your truth in the lexicon of eternity."
+                    {cooldown > 0 ? `The void is currently unstable. Reconnecting in ${cooldown}s...` : '"Seek your truth in the lexicon of eternity."'}
                   </p>
                 </div>
 
                 <button 
                   onClick={initiateJourney}
-                  className="px-16 py-6 bg-ink text-paper rounded-full font-serif text-2xl hover:bg-ink/90 transition-all flex items-center gap-4 shadow-2xl cursor-pointer group"
+                  disabled={cooldown > 0}
+                  className={`px-16 py-6 rounded-full font-serif text-2xl transition-all flex items-center gap-4 shadow-2xl group ${cooldown > 0 ? 'bg-ink/50 cursor-not-allowed text-paper/50' : 'bg-ink text-paper hover:bg-ink/90 cursor-pointer'}`}
                 >
-                  Enter the Void <Globe size={28} className="group-hover:rotate-180 transition-transform duration-1000" />
+                  {cooldown > 0 ? `Cooldown (${cooldown}s)` : 'Enter the Void'} <Globe size={28} className={cooldown > 0 ? '' : 'group-hover:rotate-180 transition-transform duration-1000'} />
                 </button>
               </div>
 
