@@ -1,11 +1,7 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 import { TarotCard, ReadingScene, Interpretation } from "../types";
 
-const apiKey = (typeof process !== 'undefined' && process.env?.GEMINI_API_KEY) || 
-               ((import.meta as any).env?.VITE_GEMINI_API_KEY) || 
-               "";
-
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const INITIAL_SCENE_SCHEMA = {
   type: Type.OBJECT,
@@ -86,15 +82,15 @@ export const geminiService = {
     
     INSTRUCTIONS:
     1. Identify 3 poetic and evocative "echoes" (quotes or reconstructed sentences) from this book.
-    2. For each echo, assign a matching Minor Arcana.
-    3. For each, describe/reconstruct a vivid context scene (150-200 words) in the author's stylistic voice that features the quote. Avoid exact verbatim replication of long paragraphs to maintain narrative flow and ensure stability.
-    4. Return valid JSON only.`;
+    2. For each echo, assign a matching Minor Arcana and a unique ID.
+    3. For each, describe/reconstruct a vivid context scene (max 200 words) in the author's voice that features the quote. Focus on atmosphere and theme. 
+    4. Keep output concise and structured. Return valid JSON only.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-flash-latest",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
-        thinkingConfig: { thinkingLevel: "LOW" as any },
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
         responseMimeType: "application/json",
         responseSchema: INITIAL_SCENE_SCHEMA as any,
       },
@@ -144,13 +140,14 @@ export const geminiService = {
     
     The fortune should be practical, grounded in daily life situations, and insightful. 
     Provide one sentence in English and its corresponding interpretation in Chinese. 
-    The tone should be that of a mentor or a wise oracle giving practical advice for today.`;
+    The tone should be that of a mentor or a wise oracle giving practical advice for today.
+    Return valid JSON only.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-flash-latest",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
-        thinkingConfig: { thinkingLevel: "LOW" as any },
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
         responseMimeType: "application/json",
         responseSchema: INTERPRETATION_SCHEMA as any,
       },
@@ -175,7 +172,7 @@ export const geminiService = {
     const prompt = `Translate the English word "${word}" into Chinese based on its meaning in this paragraph: "${context.slice(0, 500)}". Provide pinyin and a very brief context note.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-flash-latest",
+      model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
         responseMimeType: "application/json",

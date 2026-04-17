@@ -44,12 +44,16 @@ export default function App() {
       setAppState('MAJOR_DRAW');
     } catch (err: any) {
       console.error("Initiation failed:", err);
+      const errMsg = err.message || "";
       
-      if (err.message?.includes("429") || err.message?.includes("QUOTA") || err.message?.includes("RESOURCE_EXHAUSTED")) {
+      if (errMsg.includes("429")) {
         setCooldown(60);
-        alert("神谕今日过于繁忙（请求频率过高），请耐心等待 60 秒冷却后再试。");
+        alert("请求过于频繁。神谕正在平复气息，请在 60 秒倒计时结束后再试。");
+      } else if (errMsg.includes("QUOTA") || errMsg.includes("RESOURCE_EXHAUSTED")) {
+        setCooldown(300); // 增加冷却到 5 分钟
+        alert(" API 额度已耗尽。这通常是由于短时间内点击过多导致的。请等待 5 分钟或明天再试。如果您是开发者，请检查 Google AI Studio 的配额限制。");
       } else {
-        alert(`虚空门扉紧闭：${err instanceof Error ? err.message : '未知错误'}。请重试。`);
+        alert(`虚空门扉紧闭：${errMsg || '未知错误'}。可能的原因：网络不稳定或 API 配置有误。`);
       }
       
       setAppState('HOME');
