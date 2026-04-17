@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { SentenceChoice } from '../types';
 import { Sparkles } from 'lucide-react';
 

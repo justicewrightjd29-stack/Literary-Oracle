@@ -1,7 +1,15 @@
 import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 import { TarotCard, ReadingScene, Interpretation } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const getApiKey = () => {
+  try {
+    return process.env.GEMINI_API_KEY || "";
+  } catch {
+    return "";
+  }
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 const INITIAL_SCENE_SCHEMA = {
   type: Type.OBJECT,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ReadingScene, VocabularyWord } from '../types';
 import { geminiService } from '../services/geminiService';
 import { Library, BookMarked, X, Plus, Sparkles, MousePointer2, Trash2 } from 'lucide-react';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ReadingScene, Interpretation } from '../types';
 import { RotateCcw, Home } from 'lucide-react';
 

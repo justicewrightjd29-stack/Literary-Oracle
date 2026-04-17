@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ReadingScene, UserState, VocabularyWord, SentenceChoice, Interpretation } from './types';
 import { geminiService } from './services/geminiService';
 import { AtmosphericBackground } from './components/AtmosphericBackground';
