@@ -20,28 +20,21 @@ const INITIAL_SCENE_SCHEMA = {
         properties: {
           id: { type: Type.STRING },
           quote: { type: Type.STRING, description: "A famous or evocative single sentence from the novel" },
-          minorArcana: { type: Type.STRING, description: "The Minor Arcana representing the tone of this sentence" }
+          minorArcana: { type: Type.STRING, description: "The Minor Arcana representing the tone of this sentence" },
+          paragraph: { type: Type.STRING, description: "The original 300-500 word context paragraph containing this quote" }
         },
-        required: ["id", "quote", "minorArcana"]
+        required: ["id", "quote", "minorArcana", "paragraph"]
       }
     }
   },
   required: ["bookTitle", "author", "majorArcana", "choices"]
 };
 
-const PARAGRAPH_SCHEMA = {
-  type: Type.OBJECT,
-  properties: {
-    fullParagraph: { type: Type.STRING, description: "A 300-500 word narrative chunk from the book that includes the selected quote" },
-  },
-  required: ["fullParagraph"]
-};
-
 const INTERPRETATION_SCHEMA = {
   type: Type.OBJECT,
   properties: {
-    fortuneEn: { type: Type.STRING, description: "A practical daily life fortune in English (1 sentence)" },
-    fortuneZh: { type: Type.STRING, description: "A practical daily life fortune in Chinese (1 sentence)" },
+    fortuneEn: { type: Type.STRING },
+    fortuneZh: { type: Type.STRING },
   },
   required: ["fortuneEn", "fortuneZh"]
 };
@@ -91,7 +84,8 @@ export const geminiService = {
     1. The selected Major Tarot Arcana is "${selectedArcanaKey}".
     2. The corresponding book is "${mapping.book}" by ${mapping.author}.
     3. Extract exactly 3 different evocative single sentences (quotes) from this specific book that represent different Minor Tarot Arcana vibes.
-    4. For each quote, assign a Minor Tarot Arcana (Suit + Rank) that matches its emotional core.`;
+    4. For each quote, assign a Minor Tarot Arcana (Suit + Rank) that matches its emotional core.
+    5. For EACH quote, also provide the ORIGINAL full context paragraph (300-500 words) from the book that contains it.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -109,23 +103,6 @@ export const geminiService = {
       author: mapping.author,
       majorArcana: selectedArcanaKey as TarotCard,
     };
-  },
-
-  async fetchParagraph(bookTitle: string, author: string, quote: string): Promise<string> {
-    const prompt = `Provide the context paragraph (300-500 words) from "${bookTitle}" by ${author} that contains the sentence: "${quote}". 
-    The text must be the original English text from the book.`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: PARAGRAPH_SCHEMA as any,
-      },
-    });
-
-    const data = JSON.parse(response.text || "{}");
-    return data.fullParagraph;
   },
 
   async getInterpretation(major: string, minor: string, book: string, quote: string): Promise<Interpretation> {

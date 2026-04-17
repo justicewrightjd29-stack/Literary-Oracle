@@ -43,6 +43,7 @@ export interface SentenceChoice {
   id: string;
   quote: string;
   minorArcana: string;
+  paragraph?: string;
 }
 
 export interface ReadingScene {

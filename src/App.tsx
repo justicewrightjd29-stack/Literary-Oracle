@@ -39,32 +39,19 @@ export default function App() {
     }
   };
 
-  const handleSentenceChoice = async (choice: SentenceChoice) => {
+  const handleSentenceChoice = (choice: SentenceChoice) => {
     if (!userState.currentScene) return;
-    setAppState('LOADING');
-    setLoadingMsg(`Locating the passage in "${userState.currentScene.bookTitle}"...`);
     
-    try {
-      const paragraph = await geminiService.fetchParagraph(
-        userState.currentScene.bookTitle,
-        userState.currentScene.author,
-        choice.quote
-      );
-      
-      setUserState(prev => ({
-        ...prev,
-        currentScene: prev.currentScene ? {
-          ...prev.currentScene,
-          selectedSentence: choice.quote,
-          selectedMinorArcana: choice.minorArcana,
-          fullParagraph: paragraph
-        } : null
-      }));
-      setAppState('READING');
-    } catch (err) {
-      console.error("Paragraph fetch failed:", err);
-      setAppState('SENTENCE_PICK');
-    }
+    setUserState(prev => ({
+      ...prev,
+      currentScene: prev.currentScene ? {
+        ...prev.currentScene,
+        selectedSentence: choice.quote,
+        selectedMinorArcana: choice.minorArcana,
+        fullParagraph: choice.paragraph
+      } : null
+    }));
+    setAppState('READING');
   };
 
   const fetchInterpretation = async () => {
