@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  
+  --color-paper: #F7F3ED;
+  --color-ink: #2C2925;
+  --color-gold: #C5A059;
+  --color-olive: #6B705C;
+  --color-oracle: #C5A059;
+  
+  --border-natural: rgba(44, 41, 37, 0.12);
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-sans overflow-x-hidden;
+  }
+}
+
+.atmosphere {
+  background-color: var(--color-paper);
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+  opacity: 0.6;
+}
+
+.oracle-glass {
+  background-color: white;
+  border: 1px solid var(--border-natural);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.literary-text {
+  font-family: var(--font-serif);
+  font-size: 1.625rem; /* 26px */
+  line-height: 1.6;
+  color: var(--color-ink);
+}
+
+.choice-btn {
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+  transition: all 0.2s ease;
+  background-color: white;
+  border: 1px solid var(--border-natural);
+  border-radius: 12px;
+  font-family: var(--font-serif);
+}
+
+.choice-btn:hover {
+  background-color: #fffcf8;
+  border-color: var(--color-gold);
+}
+
+.choice-btn:active {
+  transform: scale(0.99);
+}
+
+.sidebar-natural {
+  background: rgba(247, 243, 237, 0.8);
+  backdrop-blur: 10px;
+  border-left: 1px solid var(--border-natural);
+}
+
+.tarot-card-natural {
+  background: white;
+  border: 1px solid var(--color-gold);
+  border-radius: 4px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+[draggable="true"] {
+  cursor: grab;
+}
+
+[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.hex-line {
+  height: 6px;
+  background: var(--color-ink);
+  border-radius: 2px;
+}
+
+.hex-line.broken {
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+}
+
+.hex-line.broken::before, .hex-line.broken::after {
+  content: '';
+  width: 26px;
+  height: 6px;
+  background: var(--color-ink);
+  border-radius: 2px;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}

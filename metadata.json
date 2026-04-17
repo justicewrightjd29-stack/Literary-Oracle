@@ -1,0 +1,6 @@
+{
+  "name": "Literary Oracle (文学神谕)",
+  "description": "A narrative language learning system combining literature, Tarot personality insights, and Hexagram structural interpretations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["AI Narrative Generation", "Personality Insights", "Language Learning"]
+}
