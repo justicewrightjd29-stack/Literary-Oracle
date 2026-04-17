@@ -48,12 +48,12 @@ export default function App() {
       
       if (errMsg.includes("429")) {
         setCooldown(60);
-        alert("请求过于频繁。神谕正在平复气息，请在 60 秒倒计时结束后再试。");
+        alert(`请求过于频繁 (429)。神谕正在平复气息，请在 60 秒倒计时结束后再试。\n\n[调试信息]: ${errMsg}`);
       } else if (errMsg.includes("QUOTA") || errMsg.includes("RESOURCE_EXHAUSTED")) {
         setCooldown(300); // 增加冷却到 5 分钟
-        alert(" API 额度已耗尽。这通常是由于短时间内点击过多导致的。请等待 5 分钟或明天再试。如果您是开发者，请检查 Google AI Studio 的配额限制。");
+        alert(`API 额度已耗尽 (Quota Exhausted)。这通常是由于短时间内点击过多或达到了 24 小时免费限制导致的。请等待 5 分钟或明天再试。\n\n[调试信息]: ${errMsg}`);
       } else {
-        alert(`虚空门扉紧闭：${errMsg || '未知错误'}。可能的原因：网络不稳定或 API 配置有误。`);
+        alert(`虚空门扉紧闭：${errMsg || '未知错误'}。可能的原因：网络不稳定或 API 配置有误。\n\n[调试信息]: ${errMsg}`);
       }
       
       setAppState('HOME');
