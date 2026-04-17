@@ -83,9 +83,11 @@ export const geminiService = {
     const prompt = `Act as a Literary Oracle. 
     1. The selected Major Tarot Arcana is "${selectedArcanaKey}".
     2. The corresponding book is "${mapping.book}" by ${mapping.author}.
-    3. Extract exactly 3 different evocative single sentences (quotes) from this specific book that represent different Minor Tarot Arcana vibes.
-    4. For each quote, assign a Minor Tarot Arcana (Suit + Rank) that matches its emotional core.
-    5. For EACH quote, also provide the ORIGINAL full context paragraph (300-500 words) from the book that contains it.`;
+    3. Task: Extract 3 evocatively different quotes from this specific book.
+    4. For EACH quote:
+       - Assign a matching Minor Tarot Arcana.
+       - Provide the ORIGINAL full context paragraph (150-250 words) from the book containing it.
+    IMPORTANT: Return EXACTLY 3 choices in the JSON array. Output MUST be valid JSON.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -96,13 +98,25 @@ export const geminiService = {
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
-    return {
-      ...data,
-      bookTitle: mapping.book,
-      author: mapping.author,
-      majorArcana: selectedArcanaKey as TarotCard,
-    };
+    try {
+      const text = response.text || "{}";
+      const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      const data = JSON.parse(cleanJson);
+      
+      if (!data.choices || data.choices.length === 0) {
+        throw new Error("The Oracle returned no echoes. The void is silent.");
+      }
+
+      return {
+        ...data,
+        bookTitle: mapping.book,
+        author: mapping.author,
+        majorArcana: selectedArcanaKey as TarotCard,
+      };
+    } catch (parseError) {
+      console.error("JSON Parse failed:", parseError, response.text);
+      throw new Error("The Akashic Records are garbled. Please try again.");
+    }
   },
 
   async getInterpretation(major: string, minor: string, book: string, quote: string): Promise<Interpretation> {
@@ -123,7 +137,14 @@ export const geminiService = {
       },
     });
 
-    return JSON.parse(response.text || "{}");
+    try {
+      const text = response.text || "{}";
+      const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      return JSON.parse(cleanJson);
+    } catch (e) {
+      console.error("Interpretation parse error:", e);
+      throw new Error("Could not decipher the Oracle's prophecy.");
+    }
   },
 
   async getTranslation(word: string, context: string) {
