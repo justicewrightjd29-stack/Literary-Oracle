@@ -7,6 +7,7 @@ import { ArcanaDraw } from './components/ArcanaDraw';
 import { SentencePick } from './components/SentencePick';
 import { ReadingView } from './components/ReadingView';
 import { OracleView } from './components/OracleView';
+import { LoadingScreen } from './components/LoadingScreen';
 import { Sparkles, Globe, Library, BookOpen, Trash2, Home } from 'lucide-react';
 
 type AppState = 'HOME' | 'MAJOR_DRAW' | 'SENTENCE_PICK' | 'READING' | 'ORACLE' | 'WORDBANK' | 'LOADING';
@@ -182,7 +183,7 @@ export default function App() {
           )}
 
           {appState === 'MAJOR_DRAW' && userState.currentScene && (
-            <div key="major-draw">
+            <div key="major-draw" className="h-full">
               <ArcanaDraw 
                 card={userState.currentScene.majorArcana}
                 bookTitle={userState.currentScene.bookTitle}
@@ -193,7 +194,7 @@ export default function App() {
           )}
 
           {appState === 'SENTENCE_PICK' && userState.currentScene && (
-            <div key="sentence-pick">
+            <div key="sentence-pick" className="h-full">
               <SentencePick 
                 choices={userState.currentScene.choices || []}
                 onSelect={handleSentenceChoice}
@@ -202,7 +203,7 @@ export default function App() {
           )}
 
           {appState === 'READING' && userState.currentScene && (
-            <div key="reading">
+            <div key="reading" className="h-full">
               <ReadingView 
                 scene={userState.currentScene}
                 wordBank={userState.wordBank}
@@ -214,7 +215,7 @@ export default function App() {
           )}
 
           {appState === 'ORACLE' && userState.currentScene && lastOracle && (
-            <div key="oracle">
+            <div key="oracle" className="h-full">
               <OracleView 
                 scene={userState.currentScene}
                 interpretation={lastOracle}
@@ -225,16 +226,7 @@ export default function App() {
           )}
 
           {appState === 'LOADING' && (
-            <motion.div 
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-full flex flex-col items-center justify-center text-center space-y-8"
-            >
-              <div className="w-24 h-24 border-t-2 border-gold rounded-full animate-spin" />
-              <p className="font-serif italic text-ink/40 tracking-[0.2em] uppercase text-xs">{loadingMsg}</p>
-            </motion.div>
+            <LoadingScreen key="loading" message={loadingMsg} />
           )}
 
           {appState === 'WORDBANK' && (

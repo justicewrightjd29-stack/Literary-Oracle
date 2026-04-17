@@ -76,7 +76,7 @@ export const ReadingView: React.FC<ReadingViewProps> = ({ scene, wordBank, onAdd
       className="h-full grid grid-cols-1 lg:grid-cols-[1fr_400px] overflow-hidden"
     >
       {/* Main Text Content */}
-      <div className="relative overflow-y-auto p-8 md:p-16 lg:p-24 border-r border-natural bg-white/20 backdrop-blur-sm scrollbar-hide">
+      <div className="relative overflow-y-auto p-8 md:p-16 lg:p-24 border-r border-natural bg-white/20 backdrop-blur-sm">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="space-y-4">
             <h2 className="text-xs uppercase tracking-[0.4em] text-gold font-bold">The Narrative</h2>
