@@ -33,6 +33,8 @@ export default function App() {
       setAppState('MAJOR_DRAW');
     } catch (err) {
       console.error("Initiation failed:", err);
+      // Give the user visual feedback if things fail, especially for Vercel deploys
+      alert(`The void remains closed: ${err instanceof Error ? err.message : 'Unknown error'}. Please ensure Gemini API keys are configured.`);
       setAppState('HOME');
     }
   };
